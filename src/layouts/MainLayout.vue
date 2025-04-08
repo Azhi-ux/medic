@@ -8,7 +8,9 @@ import {
   Collection,
   Notebook,
   Calendar,
-  Trophy
+  Trophy,
+  Search,
+  User
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
@@ -30,13 +32,16 @@ const handleSelect = (key: string) => {
     router.push(item.route)
   }
 }
+
+// 搜索框
+const searchQuery = ref('')
 </script>
 
 <template>
   <el-container class="layout-container">
     <el-aside width="200px">
       <div class="logo-container">
-        <img  alt="Logo" class="logo" />
+        <img src="/vite.svg" alt="Logo" class="logo" />
         <h1 class="logo-text">中医药文化</h1>
       </div>
       <el-menu
@@ -59,12 +64,13 @@ const handleSelect = (key: string) => {
           </div>
           <div class="header-actions">
             <el-input
+              v-model="searchQuery"
               placeholder="搜索文化知识..."
-              prefix-icon="Search"
+              :prefix-icon="Search"
               class="search-input"
             />
             <el-dropdown>
-              <el-avatar icon="UserFilled" />
+              <el-avatar :icon="User" />
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item>个人中心</el-dropdown-item>

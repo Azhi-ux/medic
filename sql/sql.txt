@@ -1,0 +1,205 @@
+-- 用户表
+CREATE TABLE `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(100) NOT NULL,
+  `nickname` varchar(50) DEFAULT '中医爱好者',
+  `avatar` varchar(255) DEFAULT NULL,
+  `bio` text,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 中药材表
+CREATE TABLE `herbs` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL COMMENT '中药名',
+  `latin_name` varchar(100) DEFAULT NULL COMMENT '拉丁名',
+  `category` varchar(50) NOT NULL COMMENT '分类',
+  `nature` varchar(100) DEFAULT NULL COMMENT '性味',
+  `effects` text COMMENT '功效',
+  `image` varchar(255) DEFAULT NULL COMMENT '图片',
+  `usage` varchar(50) DEFAULT NULL COMMENT '用量',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_category` (`category`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 中药材常见用途表
+CREATE TABLE `herb_uses` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `herb_id` int NOT NULL COMMENT '关联中药材ID',
+  `use_case` varchar(100) NOT NULL COMMENT '用途',
+  PRIMARY KEY (`id`),
+  KEY `herb_id` (`herb_id`),
+  CONSTRAINT `herb_uses_ibfk_1` FOREIGN KEY (`herb_id`) REFERENCES `herbs` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 方剂表
+CREATE TABLE `prescriptions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL COMMENT '方剂名称',
+  `category` varchar(50) DEFAULT NULL COMMENT '分类',
+  `source` varchar(100) DEFAULT NULL COMMENT '出处',
+  `indication` text COMMENT '适应症',
+  `usage` varchar(255) DEFAULT NULL COMMENT '用法用量',
+  `theory` varchar(255) DEFAULT NULL COMMENT '功用理论',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 方剂组成表
+CREATE TABLE `prescription_compositions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `prescription_id` int NOT NULL COMMENT '关联方剂ID',
+  `herb` varchar(50) NOT NULL COMMENT '药材名称',
+  `amount` varchar(20) DEFAULT NULL COMMENT '用量',
+  PRIMARY KEY (`id`),
+  KEY `prescription_id` (`prescription_id`),
+  CONSTRAINT `prescription_compositions_ibfk_1` FOREIGN KEY (`prescription_id`) REFERENCES `prescriptions` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 医生表
+CREATE TABLE `doctors` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL COMMENT '医生姓名',
+  `title` varchar(50) DEFAULT NULL COMMENT '职称',
+  `department` varchar(50) DEFAULT NULL COMMENT '科室',
+  `specialty` varchar(255) DEFAULT NULL COMMENT '专长',
+  `experience` varchar(50) DEFAULT NULL COMMENT '从医经验',
+  `avatar` varchar(255) DEFAULT NULL COMMENT '头像',
+  `rating` decimal(2,1) DEFAULT '5.0' COMMENT '评分',
+  `consultations` int DEFAULT '0' COMMENT '问诊量',
+  `available` tinyint(1) DEFAULT '1' COMMENT '是否在线',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 文章表
+CREATE TABLE `articles` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL COMMENT '标题',
+  `author` varchar(50) DEFAULT NULL COMMENT '作者',
+  `category` varchar(50) DEFAULT NULL COMMENT '分类',
+  `publish_date` date DEFAULT NULL COMMENT '发布日期',
+  `views` int DEFAULT '0' COMMENT '浏览量',
+  `likes` int DEFAULT '0' COMMENT '点赞数',
+  `cover` varchar(255) DEFAULT NULL COMMENT '封面图片',
+  `summary` varchar(255) DEFAULT NULL COMMENT '摘要',
+  `content` text COMMENT '内容',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_category` (`category`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 社区话题表
+CREATE TABLE `topics` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL COMMENT '标题',
+  `content` text COMMENT '内容',
+  `author_id` int DEFAULT NULL COMMENT '作者ID',
+  `replies` int DEFAULT '0' COMMENT '回复数',
+  `views` int DEFAULT '0' COMMENT '浏览量',
+  `likes` int DEFAULT '0' COMMENT '点赞数',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `author_id` (`author_id`),
+  CONSTRAINT `topics_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 话题标签表
+CREATE TABLE `topic_tags` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `topic_id` int NOT NULL,
+  `tag` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `topic_id` (`topic_id`),
+  CONSTRAINT `topic_tags_ibfk_1` FOREIGN KEY (`topic_id`) REFERENCES `topics` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 话题回复表
+CREATE TABLE `topic_replies` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `topic_id` int NOT NULL,
+  `user_id` int DEFAULT NULL,
+  `content` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `topic_id` (`topic_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `topic_replies_ibfk_1` FOREIGN KEY (`topic_id`) REFERENCES `topics` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `topic_replies_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 活动表
+CREATE TABLE `events` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL COMMENT '活动标题',
+  `date` date NOT NULL COMMENT '活动日期',
+  `location` varchar(100) DEFAULT NULL COMMENT '活动地点',
+  `type` varchar(50) DEFAULT NULL COMMENT '活动类型',
+  `description` text COMMENT '活动描述',
+  `image` varchar(255) DEFAULT NULL COMMENT '活动图片',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 文化特色表
+CREATE TABLE `cultural_features` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(50) NOT NULL COMMENT '标题',
+  `icon` varchar(20) DEFAULT NULL COMMENT '图标',
+  `description` varchar(255) DEFAULT NULL COMMENT '描述',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 用户收藏表
+CREATE TABLE `user_favorites` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `item_type` enum('article','herb','prescription','topic') NOT NULL COMMENT '收藏类型',
+  `item_id` int NOT NULL COMMENT '收藏项ID',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_item` (`user_id`,`item_type`,`item_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `user_favorites_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 用户学习历史表
+CREATE TABLE `user_learning_history` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `content_type` enum('article','herb','prescription') NOT NULL COMMENT '内容类型',
+  `content_id` int NOT NULL COMMENT '内容ID',
+  `last_view` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_content` (`user_id`,`content_type`,`content_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `user_learning_history_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 在线问诊记录表
+CREATE TABLE `consultations` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
+  `doctor_id` int DEFAULT NULL,
+  `type` enum('text','video') NOT NULL DEFAULT 'text' COMMENT '问诊类型',
+  `symptoms` text COMMENT '症状描述',
+  `status` enum('pending','ongoing','completed') NOT NULL DEFAULT 'pending' COMMENT '状态',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `doctor_id` (`doctor_id`),
+  CONSTRAINT `consultations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `consultations_ibfk_2` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

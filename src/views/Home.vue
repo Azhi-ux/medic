@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { Calendar, Location } from '@element-plus/icons-vue'
 
 const statistics = ref([
   { label: '文化传承', value: '5000+', desc: '年中医药历史' },

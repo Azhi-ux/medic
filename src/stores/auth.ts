@@ -9,8 +9,13 @@ export const useAuthStore = defineStore('auth', () => {
   const loading = ref(false)
 
   const initialize = async () => {
-    const { data: { user: currentUser } } = await supabase.auth.getUser()
-    user.value = currentUser
+    try {
+      const { data: { user: currentUser } } = await supabase.auth.getUser()
+      user.value = currentUser
+    } catch (error) {
+      console.error('Failed to initialize auth:', error)
+      user.value = null
+    }
   }
 
   const login = async (email: string, password: string) => {

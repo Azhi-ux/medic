@@ -11,17 +11,17 @@ import { useAuthStore } from './stores/auth'
 const app = createApp(App)
 const pinia = createPinia()
 
+app.use(pinia)
+app.use(ElementPlus)
+app.use(router)
+
 // Register all icons globally
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 
-app.use(pinia)
-app.use(router)
-app.use(ElementPlus)
-
 // Initialize auth state
 const authStore = useAuthStore()
-await authStore.initialize()
-
-app.mount('#app')
+authStore.initialize().then(() => {
+  app.mount('#app')
+})
