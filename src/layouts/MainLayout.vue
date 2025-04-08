@@ -36,7 +36,7 @@ const handleSelect = (key: string) => {
   <el-container class="layout-container">
     <el-aside width="200px">
       <div class="logo-container">
-        <img src="/logo.png" alt="Logo" class="logo" />
+        <img  alt="Logo" class="logo" />
         <h1 class="logo-text">中医药文化</h1>
       </div>
       <el-menu
