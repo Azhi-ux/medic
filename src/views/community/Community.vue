@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Search, Plus, View, Star, ChatDotRound, User } from '@element-plus/icons-vue'
+import type { ElMessage } from 'element-plus'
 
 interface Topic {
   id: number
